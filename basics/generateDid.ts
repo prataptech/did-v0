@@ -8,7 +8,7 @@ import type {
 import { Blockchain } from "@kiltprotocol/chain-helpers";
 
 export async function generateDid(
-  // submitter: SignerInterface<"Ed25519", KiltAddress>,
+  submitter: SignerInterface<"Ed25519", KiltAddress>,
   authenticationKeyPair: MultibaseKeyPair
 ) {
 
@@ -17,15 +17,15 @@ export async function generateDid(
   const transactionHandler = Kilt.DidHelpers.createDid({
     api,
     signers: [authenticationKeyPair],
-    submitter: submitterId,
+    submitter: submitter,
     fromPublicKey: authenticationKeyPair.publicKeyMultibase,
   });
 
 
-  // const didDocumentTransactionResult = await transactionHandler.submit();
+  const didDocumentTransactionResult = await transactionHandler.submit();
 
-  const didTrans = await transactionHandler.getSubmittable({signSubmittable: false})
-  console.log("did result is ", didTrans);
+  // const didTrans = await transactionHandler.getSubmittable({signSubmittable: false})
+  // console.log("did result is ", didTrans);
   // console.log("did doc is ", didDocumentTransactionResult);
   // const lol = await transactionHandler.getSubmittable({signSubmittable: false});
 
@@ -84,12 +84,12 @@ export async function generateDid(
   // console.log("lol is ", lol );
   // console.log("lol is ", lol );
 
-  // if (didDocumentTransactionResult.status !== "confirmed") {
-  //   console.log(didDocumentTransactionResult.status);
-  //   throw new Error("create DID failed");
-  // }
+  if (didDocumentTransactionResult.status !== "confirmed") {
+    console.log(didDocumentTransactionResult.status);
+    throw new Error("create DID failed");
+  }
 
-  // let { didDocument, signers } = didDocumentTransactionResult.asConfirmed;
-  // // console.log(`ISSUER_DID_URI=${didDocument.id}`);
-  // return { didDocument, signers };
+  let { didDocument, signers } = didDocumentTransactionResult.asConfirmed;
+  // console.log(`ISSUER_DID_URI=${didDocument.id}`);
+  return { didDocument, signers };
 }

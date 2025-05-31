@@ -44,21 +44,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDid = generateDid;
 const Kilt = __importStar(require("@kiltprotocol/sdk-js"));
-function generateDid(
-// submitter: SignerInterface<"Ed25519", KiltAddress>,
-authenticationKeyPair) {
+function generateDid(submitter, authenticationKeyPair) {
     return __awaiter(this, void 0, void 0, function* () {
         const submitterId = "4tJbxxKqYRv3gDvY66BKyKzZheHEH8a27VBiMfeGX2iQrire";
         const api = Kilt.ConfigService.get("api");
         const transactionHandler = Kilt.DidHelpers.createDid({
             api,
             signers: [authenticationKeyPair],
-            submitter: submitterId,
+            submitter: submitter,
             fromPublicKey: authenticationKeyPair.publicKeyMultibase,
         });
-        // const didDocumentTransactionResult = await transactionHandler.submit();
-        const didTrans = yield transactionHandler.getSubmittable({ signSubmittable: false });
-        console.log("did result is ", didTrans);
+        const didDocumentTransactionResult = yield transactionHandler.submit();
+        // const didTrans = await transactionHandler.getSubmittable({signSubmittable: false})
+        // console.log("did result is ", didTrans);
         // console.log("did doc is ", didDocumentTransactionResult);
         // const lol = await transactionHandler.getSubmittable({signSubmittable: false});
         // console.log("after get submittable ", lol.txHex)
@@ -94,12 +92,12 @@ authenticationKeyPair) {
         // console.log("xxxyz , ", xx.asFailed)
         // console.log("lol is ", lol );
         // console.log("lol is ", lol );
-        // if (didDocumentTransactionResult.status !== "confirmed") {
-        //   console.log(didDocumentTransactionResult.status);
-        //   throw new Error("create DID failed");
-        // }
-        // let { didDocument, signers } = didDocumentTransactionResult.asConfirmed;
-        // // console.log(`ISSUER_DID_URI=${didDocument.id}`);
-        // return { didDocument, signers };
+        if (didDocumentTransactionResult.status !== "confirmed") {
+            console.log(didDocumentTransactionResult.status);
+            throw new Error("create DID failed");
+        }
+        let { didDocument, signers } = didDocumentTransactionResult.asConfirmed;
+        // console.log(`ISSUER_DID_URI=${didDocument.id}`);
+        return { didDocument, signers };
     });
 }
